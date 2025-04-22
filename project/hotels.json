@@ -1,0 +1,87 @@
+import json
+import os
+
+HOTELS_FILE = 'hotels.json'
+
+# Load hotels from file
+def load_hotels():
+    if not os.path.exists(HOTELS_FILE):
+        return []
+    with open(HOTELS_FILE, 'r') as file:
+        return json.load(file)
+
+# Save hotels to file
+def save_hotels(hotels):
+    with open(HOTELS_FILE, 'w') as file:
+        json.dump(hotels, file, indent=4)
+
+def add_hotel():
+    hotels = load_hotels()
+    try:
+        hotel_id = int(input("Enter hotel ID: "))
+        name = input("Enter hotel name: ")
+        location = input("Enter hotel location: ")
+        rating = float(input("Enter hotel rating: "))
+
+        hotels.append({
+            "id": hotel_id,
+            "name": name,
+            "location": location,
+            "rating": rating
+        })
+
+        save_hotels(hotels)
+        print("Hotel added successfully!\n")
+    except ValueError:
+        print("Invalid input. Please try again.\n")
+
+def delete_hotel():
+    hotels = load_hotels()
+    try:
+        hotel_id = int(input("Enter hotel ID to delete: "))
+        updated_hotels = [hotel for hotel in hotels if hotel["id"] != hotel_id]
+
+        if len(hotels) == len(updated_hotels):
+            print("Hotel not found.\n")
+        else:
+            save_hotels(updated_hotels)
+            print("Hotel deleted successfully!\n")
+    except ValueError:
+        print("Invalid input.\n")
+
+def view_hotels():
+    hotels = load_hotels()
+    if not hotels:
+        print("No hotels found.\n")
+    else:
+        for hotel in hotels:
+            print(f"ID: {hotel['id']}, Name: {hotel['name']}, Location: {hotel['location']}, Rating: {hotel['rating']}")
+        print()
+
+def update_rating():
+    hotels = load_hotels()
+    try:
+        hotel_id = int(input("Enter hotel ID to update rating: "))
+        new_rating = float(input("Enter new rating: "))
+
+        for hotel in hotels:
+            if hotel["id"] == hotel_id:
+                hotel["rating"] = new_rating
+                save_hotels(hotels)
+                print("Rating updated successfully!\n")
+                return
+        print("Hotel not found.\n")
+    except ValueError:
+        print("Invalid input.\n")
+
+def search_hotels():
+    try:
+        hotel_id = int(input("Enter hotel ID to search: "))
+        hotels = load_hotels()
+        for hotel in hotels:
+            if hotel["id"] == hotel_id:
+                print(f"ID: {hotel['id']}, Name: {hotel['name']}, Location: {hotel['location']}, Rating: {hotel['rating']}\n")
+                return
+        print("Hotel not found.\n")
+    except ValueError:
+        print("Invalid input.\n")
